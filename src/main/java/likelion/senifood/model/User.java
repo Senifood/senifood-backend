@@ -15,11 +15,13 @@ public class User {
     private String userId;
 
     private String name;
+
     private String phone;
+
     private int age;
+
     private String password;
+    
     private boolean gender; //0일시 남자, 1일시 여자
 
-    @OneToMany(mappedBy = "user")
-    private List<Refresh> refreshTokens;
 }
