@@ -13,9 +13,7 @@ public class SurveyService {
         this.surveyRepository = surveyRepository;
     }
 
-    // 설문지 질문 저장
     public Survey saveSurveyQuestions(Survey survey) {
-        // Survey 객체의 필드 값이 올바르게 설정되었는지 확인
         System.out.println("Saving survey: " + survey.toString());
         return surveyRepository.save(survey);
     }

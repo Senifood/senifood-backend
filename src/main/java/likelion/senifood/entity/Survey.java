@@ -16,11 +16,8 @@ public class Survey {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer surveyId;
-
     private String question_1;
-
     private String question_2;
-
     private String question_3;
 
 }

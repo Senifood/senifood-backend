@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/diet")
 public class DietController {
@@ -32,24 +34,25 @@ public class DietController {
             query.append("Allergies: ").append(String.join(", ", healthInfoRequest.getAllergies())).append("\n");
         }
 
-        query.append("Please provide the following details:\n");
-        query.append("- Diet name\n");
-        query.append("- Nutritional content\n");
-        query.append("- Benefits\n");
-        query.append("- Recipe URL\n");
-        query.append("- Image URL");
+        query.append("Provide the details for only one diet in the following format:\n\n");
+        query.append("Diet Title: [Title]\n");
+        query.append("Benefits: [Benefits]\n");
+        query.append("Nutritional Content: [Nutritional Content]\n");
+        query.append("Recipe URL: [URL]\n");
+        query.append("Image URL: [URL]\n");
+
+
 
         // ChatGPT API 호출
-        String chatGptResponse = chatGptService.askChatGpt(query.toString());
+        Map<String, String> dietInfo = chatGptService.askChatGpt(query.toString());
 
-        // 응답을 바탕으로 Diet 객체 생성
+        // Diet 객체 생성 및 속성 설정
         Diet diet = new Diet();
-        // 여기서 chatGptResponse를 파싱하여 diet 객체의 속성을 설정합니다.
-        diet.setDietTitle("Example Diet Title");
-        diet.setDietBenefit("Example Benefits");
-        diet.setDietNutrition("Example Nutritional Content");
-        diet.setDietRecipeURL("http://example.com/recipe");
-        diet.setDietImageURL("http://example.com/image");
+        diet.setDietTitle(dietInfo.get("dietTitle"));
+        diet.setDietBenefit(dietInfo.get("dietBenefit"));
+        diet.setDietNutrition(dietInfo.get("dietNutrition"));
+        diet.setDietRecipeURL(dietInfo.get("dietRecipeURL"));
+        diet.setDietImageURL(dietInfo.get("dietImageURL"));
 
         // Diet 객체 저장
         Diet savedDiet = dietService.saveDiet(diet);
