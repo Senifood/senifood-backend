@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/survey")
@@ -40,17 +43,38 @@ public class SurveyController {
     @PostMapping("/{user_id}")
     public ResponseEntity<UserSurveyResponse> saveUserResponse(
             @PathVariable("user_id") String userId,
-            @RequestBody UserSurveyResponse response) {
+            @RequestBody Map<String, List<String>> responses) {
 
+        String combinedAnswer1 = String.join(",", responses.get("answer1"));
+        String combinedAnswer2 = String.join(",", responses.get("answer2"));
+        String combinedAnswer3 = String.join(",", responses.get("answer3"));
+
+        UserSurveyResponse response = new UserSurveyResponse();
         response.setUserId(userId);
+        response.setAnswer_1(combinedAnswer1);
+        response.setAnswer_2(combinedAnswer2);
+        response.setAnswer_3(combinedAnswer3);
+
         UserSurveyResponse savedResponse = userSurveyResponseService.saveUserResponse(response);
         return new ResponseEntity<>(savedResponse, HttpStatus.CREATED);
     }
 
-    // 유저의 응답 조회
+
+    // 특정 유저의 설문지 응답 조회
     @GetMapping("/responses/{user_id}")
-    public ResponseEntity<List<UserSurveyResponse>> getUserResponses(@PathVariable("user_id") String userId) {
-        List<UserSurveyResponse> responses = userSurveyResponseService.getUserResponses(userId);
+    public ResponseEntity<Map<String, List<String>>> getUserResponses(@PathVariable("user_id") String userId) {
+        UserSurveyResponse response = userSurveyResponseService.getUserResponses(userId).get(0);
+
+        // ,로 구분된 문자열을 리스트로 변환
+        List<String> answer1List = Arrays.asList(response.getAnswer_1().split(","));
+        List<String> answer2List = Arrays.asList(response.getAnswer_2().split(","));
+        List<String> answer3List = Arrays.asList(response.getAnswer_3().split(","));
+
+        Map<String, List<String>> responses = new HashMap<>();
+        responses.put("answer1", answer1List);
+        responses.put("answer2", answer2List);
+        responses.put("answer3", answer3List);
+
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 }

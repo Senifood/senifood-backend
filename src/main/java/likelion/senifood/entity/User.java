@@ -1,8 +1,6 @@
 package likelion.senifood.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,14 +12,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSurveyResponse {
+public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer responseId;
     private String userId;
-    private String answer_1;
-    private String answer_2;
-    private String answer_3;
-
+    private String name;
+    private String phone;
+    private int age;
+    private String password;
+    private byte gender;
 }
