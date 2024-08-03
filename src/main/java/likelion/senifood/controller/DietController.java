@@ -1,13 +1,18 @@
 package likelion.senifood.controller;
 
-import likelion.senifood.dto.HealthInfoRequest;
 import likelion.senifood.entity.Diet;
+import likelion.senifood.entity.UserDietLike;
+import likelion.senifood.entity.UserSurveyResponse;
 import likelion.senifood.service.ChatGptService;
 import likelion.senifood.service.DietService;
+import likelion.senifood.service.UserDietLikeService;
+import likelion.senifood.service.UserSurveyResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,37 +21,67 @@ public class DietController {
 
     private final DietService dietService;
     private final ChatGptService chatGptService;
+    private final UserSurveyResponseService userSurveyResponseService;
+    private final UserDietLikeService userDietLikeService;
 
-    public DietController(DietService dietService, ChatGptService chatGptService) {
+    public DietController(DietService dietService, ChatGptService chatGptService, UserSurveyResponseService userSurveyResponseService, UserDietLikeService userDietLikeService) {
         this.dietService = dietService;
         this.chatGptService = chatGptService;
+        this.userSurveyResponseService = userSurveyResponseService;
+        this.userDietLikeService = userDietLikeService;
     }
 
-    @PostMapping("/generate")
-    public ResponseEntity<Diet> generateDiet(@RequestBody HealthInfoRequest healthInfoRequest) {
-        // 건강 정보와 알레르기 정보를 바탕으로 질문 생성
-        StringBuilder query = new StringBuilder("Please suggest a diet plan for a person with the following health conditions and allergies:\n");
+    // 사용자의 건강 정보를 바탕으로 식단을 생성하는 엔드포인트
+    @PostMapping
+    public ResponseEntity<Diet> generateDiet(@RequestBody Map<String, String> requestBody) {
 
-        if (healthInfoRequest.getDiseases() != null && !healthInfoRequest.getDiseases().isEmpty()) {
-            query.append("Diseases: ").append(String.join(", ", healthInfoRequest.getDiseases())).append("\n");
-        }
-        if (healthInfoRequest.getAllergies() != null && !healthInfoRequest.getAllergies().isEmpty()) {
-            query.append("Allergies: ").append(String.join(", ", healthInfoRequest.getAllergies())).append("\n");
+        String userId = requestBody.get("user_id");
+
+        List<UserSurveyResponse> userResponses = userSurveyResponseService.getUserResponses(userId);
+        System.out.println(userResponses);
+
+        List<String> diseases = new ArrayList<>();
+        List<String> allergies = new ArrayList<>();
+        List<String> medications = new ArrayList<>();
+
+        for (UserSurveyResponse response : userResponses) {
+            System.out.println(response.getAnswer_1());
+            if (response.getAnswer_1() != null) {
+                diseases.add(response.getAnswer_1());
+            }
+            System.out.println(response.getAnswer_2());
+            if (response.getAnswer_2() != null) {
+                allergies.add(response.getAnswer_2());
+            }
+            System.out.println(response.getAnswer_3());
+            if (response.getAnswer_3() != null) {
+                medications.add(response.getAnswer_3());
+            }
         }
 
-        query.append("Provide the details for only one diet in the following format:\n\n");
+        // ChatGPT API에 전달할 질문 생성
+        StringBuilder query = new StringBuilder("Please suggest a food for a person with the following health conditions, allergies, and medications:\n");
+
+        if (!diseases.isEmpty()) {
+            query.append("Diseases: ").append(String.join(", ", diseases)).append("\n");
+        }
+        if (!allergies.isEmpty()) {
+            query.append("Allergies: ").append(String.join(", ", allergies)).append("\n");
+        }
+        if (!medications.isEmpty()) {
+            query.append("Medications: ").append(String.join(", ", medications)).append("\n");
+        }
+
+        query.append("Provide the details for only one food in the following format:\n\n");
         query.append("Diet Title: [Title]\n");
         query.append("Benefits: [Benefits]\n");
         query.append("Nutritional Content: [Nutritional Content]\n");
         query.append("Recipe URL: [URL]\n");
         query.append("Image URL: [URL]\n");
 
-
-
         // ChatGPT API 호출
         Map<String, String> dietInfo = chatGptService.askChatGpt(query.toString());
 
-        // Diet 객체 생성 및 속성 설정
         Diet diet = new Diet();
         diet.setDietTitle(dietInfo.get("dietTitle"));
         diet.setDietBenefit(dietInfo.get("dietBenefit"));
@@ -54,9 +89,49 @@ public class DietController {
         diet.setDietRecipeURL(dietInfo.get("dietRecipeURL"));
         diet.setDietImageURL(dietInfo.get("dietImageURL"));
 
-        // Diet 객체 저장
         Diet savedDiet = dietService.saveDiet(diet);
 
         return new ResponseEntity<>(savedDiet, HttpStatus.CREATED);
     }
+
+    // 특정 사용자가 식단 좋아요를 추가하는 엔드포인트
+    @PostMapping("/likes/{user_id}")
+    public ResponseEntity<String> likeDiet(
+            @PathVariable("user_id") String userId,
+            @RequestBody Map<String, Integer> requestBody) {
+
+        Integer dietId = requestBody.get("diet_id");
+        if (dietId == null) {
+            return new ResponseEntity<>("diet_id is required", HttpStatus.BAD_REQUEST);
+        }
+
+        UserDietLike userDietLike = new UserDietLike();
+        userDietLike.setUserId(userId);
+        userDietLike.setDietId(dietId);
+        userDietLikeService.saveUserDietLike(userDietLike);
+        return new ResponseEntity<>("Diet liked successfully", HttpStatus.OK);
+    }
+
+    // 특정 사용자가 식단 좋아요를 취소하는 엔드포인트
+    @DeleteMapping("/likes/{user_id}")
+    public ResponseEntity<String> unlikeDiet(
+            @PathVariable("user_id") String userId,
+            @RequestBody Map<String, Integer> requestBody) {
+
+        Integer dietId = requestBody.get("diet_id");
+        if (dietId == null) {
+            return new ResponseEntity<>("diet_id is required", HttpStatus.BAD_REQUEST);
+        }
+
+        userDietLikeService.deleteUserDietLike(userId, dietId);
+        return new ResponseEntity<>("Diet unliked successfully", HttpStatus.OK);
+    }
+
+    // 특정 사용자가 좋아요한 식단 목록을 조회하는 엔드포인트
+    @GetMapping("/likes/{user_id}")
+    public ResponseEntity<List<Diet>> getUserLikedDiets(@PathVariable("user_id") String userId) {
+        List<Diet> likedDiets = userDietLikeService.getUserLikedDiets(userId);
+        return new ResponseEntity<>(likedDiets, HttpStatus.OK);
+    }
+
 }
