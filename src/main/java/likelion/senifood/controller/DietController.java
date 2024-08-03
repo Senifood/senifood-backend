@@ -31,33 +31,31 @@ public class DietController {
         this.userDietLikeService = userDietLikeService;
     }
 
+    // 사용자의 건강 정보를 바탕으로 식단을 생성하는 엔드포인트
     @PostMapping
     public ResponseEntity<Diet> generateDiet(@RequestBody Map<String, String> requestBody) {
-        // 요청 바디에서 userId를 가져옴
+
         String userId = requestBody.get("user_id");
 
-        // 유저 ID를 사용하여 설문 응답 가져오기
         List<UserSurveyResponse> userResponses = userSurveyResponseService.getUserResponses(userId);
         System.out.println(userResponses);
 
-        // 질병, 알레르기, 복용 중인 약물 리스트 생성
         List<String> diseases = new ArrayList<>();
         List<String> allergies = new ArrayList<>();
         List<String> medications = new ArrayList<>();
 
-        // 응답에서 질병, 알레르기, 약물 정보를 추출 (구체적인 로직은 상황에 맞게 수정)
         for (UserSurveyResponse response : userResponses) {
             System.out.println(response.getAnswer_1());
             if (response.getAnswer_1() != null) {
-                diseases.add(response.getAnswer_1());  // 가정: answer1이 질병 정보일 경우
+                diseases.add(response.getAnswer_1());
             }
             System.out.println(response.getAnswer_2());
             if (response.getAnswer_2() != null) {
-                allergies.add(response.getAnswer_2());  // 가정: answer2이 알레르기 정보일 경우
+                allergies.add(response.getAnswer_2());
             }
             System.out.println(response.getAnswer_3());
             if (response.getAnswer_3() != null) {
-                medications.add(response.getAnswer_3());  // 가정: answer3이 복용 중인 약물일 경우
+                medications.add(response.getAnswer_3());
             }
         }
 
@@ -84,7 +82,6 @@ public class DietController {
         // ChatGPT API 호출
         Map<String, String> dietInfo = chatGptService.askChatGpt(query.toString());
 
-        // Diet 객체 생성 및 속성 설정
         Diet diet = new Diet();
         diet.setDietTitle(dietInfo.get("dietTitle"));
         diet.setDietBenefit(dietInfo.get("dietBenefit"));
@@ -92,30 +89,49 @@ public class DietController {
         diet.setDietRecipeURL(dietInfo.get("dietRecipeURL"));
         diet.setDietImageURL(dietInfo.get("dietImageURL"));
 
-        // Diet 객체 저장
         Diet savedDiet = dietService.saveDiet(diet);
 
         return new ResponseEntity<>(savedDiet, HttpStatus.CREATED);
     }
 
+    // 특정 사용자가 식단 좋아요를 추가하는 엔드포인트
     @PostMapping("/likes/{user_id}")
     public ResponseEntity<String> likeDiet(
             @PathVariable("user_id") String userId,
-            @RequestParam("diet_id") Integer dietId) {
+            @RequestBody Map<String, Integer> requestBody) {
 
-        UserDietLike userDietLike = new UserDietLike(userId, dietId);
+        Integer dietId = requestBody.get("diet_id");
+        if (dietId == null) {
+            return new ResponseEntity<>("diet_id is required", HttpStatus.BAD_REQUEST);
+        }
+
+        UserDietLike userDietLike = new UserDietLike();
+        userDietLike.setUserId(userId);
+        userDietLike.setDietId(dietId);
         userDietLikeService.saveUserDietLike(userDietLike);
-        return new ResponseEntity<>("Diet liked successfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Diet liked successfully", HttpStatus.OK);
     }
 
     // 특정 사용자가 식단 좋아요를 취소하는 엔드포인트
     @DeleteMapping("/likes/{user_id}")
     public ResponseEntity<String> unlikeDiet(
             @PathVariable("user_id") String userId,
-            @RequestParam("diet_id") Integer dietId) {
+            @RequestBody Map<String, Integer> requestBody) {
+
+        Integer dietId = requestBody.get("diet_id");
+        if (dietId == null) {
+            return new ResponseEntity<>("diet_id is required", HttpStatus.BAD_REQUEST);
+        }
 
         userDietLikeService.deleteUserDietLike(userId, dietId);
         return new ResponseEntity<>("Diet unliked successfully", HttpStatus.OK);
+    }
+
+    // 특정 사용자가 좋아요한 식단 목록을 조회하는 엔드포인트
+    @GetMapping("/likes/{user_id}")
+    public ResponseEntity<List<Diet>> getUserLikedDiets(@PathVariable("user_id") String userId) {
+        List<Diet> likedDiets = userDietLikeService.getUserLikedDiets(userId);
+        return new ResponseEntity<>(likedDiets, HttpStatus.OK);
     }
 
 }
