@@ -80,8 +80,6 @@
         <configuration>
           <source>17</source> <!-- 프로젝트에 맞는 Java 버전으로 변경 -->
           <target>17</target>
-          <fork>true</fork>
-          <executable>${JAVA_HOME}/bin/javac</executable>
         </configuration>
       </plugin>
       <!-- maven-jar-plugin 추가 -->
