@@ -1,9 +1,11 @@
 package likelion.senifood.controller;
 
 import likelion.senifood.entity.Diet;
+import likelion.senifood.entity.UserDietLike;
 import likelion.senifood.entity.UserSurveyResponse;
 import likelion.senifood.service.ChatGptService;
 import likelion.senifood.service.DietService;
+import likelion.senifood.service.UserDietLikeService;
 import likelion.senifood.service.UserSurveyResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +21,14 @@ public class DietController {
 
     private final DietService dietService;
     private final ChatGptService chatGptService;
-
     private final UserSurveyResponseService userSurveyResponseService;
+    private final UserDietLikeService userDietLikeService;
 
-    public DietController(DietService dietService, ChatGptService chatGptService,    UserSurveyResponseService userSurveyResponseService) {
+    public DietController(DietService dietService, ChatGptService chatGptService, UserSurveyResponseService userSurveyResponseService, UserDietLikeService userDietLikeService) {
         this.dietService = dietService;
         this.chatGptService = chatGptService;
         this.userSurveyResponseService = userSurveyResponseService;
+        this.userDietLikeService = userDietLikeService;
     }
 
     @PostMapping
@@ -93,6 +96,26 @@ public class DietController {
         Diet savedDiet = dietService.saveDiet(diet);
 
         return new ResponseEntity<>(savedDiet, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/likes/{user_id}")
+    public ResponseEntity<String> likeDiet(
+            @PathVariable("user_id") String userId,
+            @RequestParam("diet_id") Integer dietId) {
+
+        UserDietLike userDietLike = new UserDietLike(userId, dietId);
+        userDietLikeService.saveUserDietLike(userDietLike);
+        return new ResponseEntity<>("Diet liked successfully", HttpStatus.CREATED);
+    }
+
+    // 특정 사용자가 식단 좋아요를 취소하는 엔드포인트
+    @DeleteMapping("/likes/{user_id}")
+    public ResponseEntity<String> unlikeDiet(
+            @PathVariable("user_id") String userId,
+            @RequestParam("diet_id") Integer dietId) {
+
+        userDietLikeService.deleteUserDietLike(userId, dietId);
+        return new ResponseEntity<>("Diet unliked successfully", HttpStatus.OK);
     }
 
 }
