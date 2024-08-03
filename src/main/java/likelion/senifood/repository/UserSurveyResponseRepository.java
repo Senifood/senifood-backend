@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface UserSurveyResponseRepository extends JpaRepository<UserSurveyResponse, Integer> {
     List<UserSurveyResponse> findByUserId(String userId);
+
+    boolean existsByUserId(String userId);
 }

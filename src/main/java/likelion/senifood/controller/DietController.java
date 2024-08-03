@@ -1,13 +1,16 @@
 package likelion.senifood.controller;
 
-import likelion.senifood.dto.HealthInfoRequest;
 import likelion.senifood.entity.Diet;
+import likelion.senifood.entity.UserSurveyResponse;
 import likelion.senifood.service.ChatGptService;
 import likelion.senifood.service.DietService;
+import likelion.senifood.service.UserSurveyResponseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,31 +20,63 @@ public class DietController {
     private final DietService dietService;
     private final ChatGptService chatGptService;
 
-    public DietController(DietService dietService, ChatGptService chatGptService) {
+    private final UserSurveyResponseService userSurveyResponseService;
+
+    public DietController(DietService dietService, ChatGptService chatGptService, UserSurveyResponseService surveyResponseService, UserSurveyResponseService userSurveyResponseService) {
         this.dietService = dietService;
         this.chatGptService = chatGptService;
+        this.userSurveyResponseService = userSurveyResponseService;
     }
 
-    @PostMapping("/generate")
-    public ResponseEntity<Diet> generateDiet(@RequestBody HealthInfoRequest healthInfoRequest) {
-        // 건강 정보와 알레르기 정보를 바탕으로 질문 생성
-        StringBuilder query = new StringBuilder("Please suggest a diet plan for a person with the following health conditions and allergies:\n");
+    @PostMapping
+    public ResponseEntity<Diet> generateDiet(@RequestBody Map<String, String> requestBody) {
+        // 요청 바디에서 userId를 가져옴
+        String userId = requestBody.get("user_id");
 
-        if (healthInfoRequest.getDiseases() != null && !healthInfoRequest.getDiseases().isEmpty()) {
-            query.append("Diseases: ").append(String.join(", ", healthInfoRequest.getDiseases())).append("\n");
-        }
-        if (healthInfoRequest.getAllergies() != null && !healthInfoRequest.getAllergies().isEmpty()) {
-            query.append("Allergies: ").append(String.join(", ", healthInfoRequest.getAllergies())).append("\n");
+        // 유저 ID를 사용하여 설문 응답 가져오기
+        List<UserSurveyResponse> userResponses = userSurveyResponseService.getUserResponses(userId);
+        System.out.println(userResponses);
+
+        // 질병, 알레르기, 복용 중인 약물 리스트 생성
+        List<String> diseases = new ArrayList<>();
+        List<String> allergies = new ArrayList<>();
+        List<String> medications = new ArrayList<>();
+
+        // 응답에서 질병, 알레르기, 약물 정보를 추출 (구체적인 로직은 상황에 맞게 수정)
+        for (UserSurveyResponse response : userResponses) {
+            System.out.println(response.getAnswer_1());
+            if (response.getAnswer_1() != null) {
+                diseases.add(response.getAnswer_1());  // 가정: answer1이 질병 정보일 경우
+            }
+            System.out.println(response.getAnswer_2());
+            if (response.getAnswer_2() != null) {
+                allergies.add(response.getAnswer_2());  // 가정: answer2이 알레르기 정보일 경우
+            }
+            System.out.println(response.getAnswer_3());
+            if (response.getAnswer_3() != null) {
+                medications.add(response.getAnswer_3());  // 가정: answer3이 복용 중인 약물일 경우
+            }
         }
 
-        query.append("Provide the details for only one diet in the following format:\n\n");
+        // ChatGPT API에 전달할 질문 생성
+        StringBuilder query = new StringBuilder("Please suggest a food for a person with the following health conditions, allergies, and medications:\n");
+
+        if (!diseases.isEmpty()) {
+            query.append("Diseases: ").append(String.join(", ", diseases)).append("\n");
+        }
+        if (!allergies.isEmpty()) {
+            query.append("Allergies: ").append(String.join(", ", allergies)).append("\n");
+        }
+        if (!medications.isEmpty()) {
+            query.append("Medications: ").append(String.join(", ", medications)).append("\n");
+        }
+
+        query.append("Provide the details for only one food in the following format:\n\n");
         query.append("Diet Title: [Title]\n");
         query.append("Benefits: [Benefits]\n");
         query.append("Nutritional Content: [Nutritional Content]\n");
         query.append("Recipe URL: [URL]\n");
         query.append("Image URL: [URL]\n");
-
-
 
         // ChatGPT API 호출
         Map<String, String> dietInfo = chatGptService.askChatGpt(query.toString());
@@ -59,4 +94,5 @@ public class DietController {
 
         return new ResponseEntity<>(savedDiet, HttpStatus.CREATED);
     }
+
 }
