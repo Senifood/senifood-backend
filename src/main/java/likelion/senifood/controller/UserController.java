@@ -1,5 +1,7 @@
 package likelion.senifood.controller;
 
+import likelion.senifood.common.CommonResponse;
+import likelion.senifood.dto.UserDTO;
 import likelion.senifood.entity.User;
 import likelion.senifood.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -20,5 +22,21 @@ public class UserController {
     public ResponseEntity<User> createUser(@RequestBody User user) {
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<CommonResponse> joinUser(@RequestBody UserDTO userDTO) {
+
+        CommonResponse response = userService.join(userDTO);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<CommonResponse> findUserById(@PathVariable String userId) {
+
+        CommonResponse response = userService.findUserById(userId);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 }
