@@ -22,7 +22,7 @@ public class DietController {
 
     private final UserSurveyResponseService userSurveyResponseService;
 
-    public DietController(DietService dietService, ChatGptService chatGptService, UserSurveyResponseService surveyResponseService, UserSurveyResponseService userSurveyResponseService) {
+    public DietController(DietService dietService, ChatGptService chatGptService,    UserSurveyResponseService userSurveyResponseService) {
         this.dietService = dietService;
         this.chatGptService = chatGptService;
         this.userSurveyResponseService = userSurveyResponseService;
