@@ -1,11 +1,13 @@
 package likelion.senifood.service;
 
+import likelion.senifood.dto.LunchboxDTO;
 import likelion.senifood.entity.Lunchbox;
 import likelion.senifood.repository.LunchboxRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +15,15 @@ public class LunchboxService {
 
     private final LunchboxRepository lunchboxRepository;
 
-    public List<Lunchbox> getAllLunchboxes() {
-        return lunchboxRepository.findAll();
-    }
-}
+    public List<LunchboxDTO> getAllLunchboxes() {
+        List<Lunchbox> lunchboxes = lunchboxRepository.findAll();
+        return lunchboxes.stream()
+                .map(lunchbox -> new LunchboxDTO(
+                        lunchbox.getLunchbox_id(),
+                        lunchbox.getLunchbox_title(),
+                        lunchbox.getLunchbox_imageURL(),
+                        lunchbox.getLunchbox_price(),
+                        lunchbox.isIs_subscribed()
+                ))
+                .collect(Collectors.toList());
+    }}

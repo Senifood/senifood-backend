@@ -14,6 +14,7 @@ public class CommonResponse {
 
 
     public CommonResponse(Object object) {
+        this.status = HttpStatus.OK;
         this.object = object;
     }
 

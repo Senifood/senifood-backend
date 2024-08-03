@@ -23,4 +23,8 @@ public class Lunchbox {
     private String lunchbox_price;
     private boolean is_subscribed;
     private String lunchbox_foods;
+
+    public boolean isIs_subscribed() {
+        return is_subscribed;
+    }
 }

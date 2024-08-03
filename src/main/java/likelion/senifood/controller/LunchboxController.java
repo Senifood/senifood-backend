@@ -1,5 +1,6 @@
 package likelion.senifood.controller;
 
+import likelion.senifood.dto.LunchboxDTO;
 import likelion.senifood.entity.Lunchbox;
 import likelion.senifood.service.LunchboxService;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,8 @@ public class LunchboxController {
     private final LunchboxService lunchboxService;
 
     @GetMapping
-    public ResponseEntity<List<Lunchbox>> getAllLunchboxes() {
-        List<Lunchbox> lunchboxes = lunchboxService.getAllLunchboxes();
+    public ResponseEntity<List<LunchboxDTO>> getAllLunchboxes() {
+        List<LunchboxDTO> lunchboxes = lunchboxService.getAllLunchboxes();
         return ResponseEntity.ok(lunchboxes);
     }
 }

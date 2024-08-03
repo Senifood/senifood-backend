@@ -6,7 +6,13 @@
 package likelion.senifood.dto;
 
 import likelion.senifood.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
     private String userId;
     private String name;
@@ -24,9 +30,6 @@ public class UserDTO {
         user.setPassword(this.password);
         user.setGender(this.gender);
         return user;
-    }
-
-    public UserDTO() {
     }
 
     public String getUserId() {
@@ -149,7 +152,7 @@ public class UserDTO {
     }
 
     public int hashCode() {
-        int PRIME = true;
+//        int PRIME = true;
         int result = 1;
         result = result * 59 + this.getAge();
         result = result * 59 + this.getGender();
