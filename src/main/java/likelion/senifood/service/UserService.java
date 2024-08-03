@@ -3,6 +3,7 @@ package likelion.senifood.service;
 import jakarta.transaction.Transactional;
 import likelion.senifood.common.CommonResponse;
 import likelion.senifood.dto.UserDTO;
+import likelion.senifood.dto.UserInfo;
 import likelion.senifood.entity.User;
 import likelion.senifood.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,9 @@ public class UserService {
         User entity = userDTO.toEntity();
         userRepository.save(entity);
 
-        return new CommonResponse(true, HttpStatus.OK, "성공", userDTO);
+        System.out.println(userDTO.toString());
+
+        return new CommonResponse(HttpStatus.OK, "User registered successfully.");
 
     }
 
@@ -46,16 +49,19 @@ public class UserService {
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            UserDTO userDTO = new UserDTO();
+            UserInfo userInfo = new UserInfo();
 
-            userDTO.setName(user.getName());
-            userDTO.setPhone(user.getPhone());
-            userDTO.setAge(user.getAge());
-            userDTO.setGender(user.getGender());
+            userInfo.setName(user.getName());
+            userInfo.setPhone(user.getPhone());
+            userInfo.setAge(user.getAge());
+            userInfo.setGender(user.getGender());
             // 비밀번호는 제외하고 반환
 
-            return new CommonResponse(true, HttpStatus.OK, "사용자 조회 성공", userDTO);
+            System.out.println(userInfo.toString());
+
+            return new CommonResponse(userInfo);
         } else {
+            System.out.println("Error");
             return new CommonResponse(false, HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다", null);
         }
 

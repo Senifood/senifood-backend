@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<CommonResponse> findUserById(@PathVariable String userId) {
+    public ResponseEntity<CommonResponse> findUserById(@PathVariable("userId") String userId) {
 
         CommonResponse response = userService.findUserById(userId);
 
