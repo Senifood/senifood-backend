@@ -2,10 +2,12 @@ package likelion.senifood.service;
 
 import jakarta.transaction.Transactional;
 import likelion.senifood.common.CommonResponse;
+import likelion.senifood.dto.HealthInfoRequest;
 import likelion.senifood.dto.UserDTO;
 import likelion.senifood.dto.UserInfo;
 import likelion.senifood.entity.User;
 import likelion.senifood.repository.UserRepository;
+import likelion.senifood.repository.UserSurveyResponseRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,12 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserSurveyResponseRepository userSurveyResponseRepository;
 
-    public UserService(UserRepository userRepository) {
+
+    public UserService(UserRepository userRepository, UserSurveyResponseRepository userSurveyResponseRepository) {
         this.userRepository = userRepository;
+        this.userSurveyResponseRepository = userSurveyResponseRepository;
     }
 
     public User createUser(User user) {
@@ -66,4 +71,19 @@ public class UserService {
         }
 
     }
+
+//    /*
+//     * 건강 정보 조회
+//     * */
+//    @Transactional
+//    public CommonResponse findSurveyById(String userId) {
+//        Optional<User> userSurveyOptional = userSurveyResponseRepository.findById(userId);
+//
+//        if (userSurveyOptional.isPresent()) {
+//            User user = userSurveyOptional.get();
+//            HealthInfoRequest healthInfo = new HealthInfoRequest();
+//
+//            healthInfo =
+//        }
+//    }
 }

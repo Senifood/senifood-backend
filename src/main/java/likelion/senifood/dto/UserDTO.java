@@ -4,8 +4,6 @@ import jakarta.persistence.OneToMany;
 import likelion.senifood.entity.User;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class UserDTO {
 
