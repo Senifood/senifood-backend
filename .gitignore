@@ -35,3 +35,27 @@ out/
 
 ### VS Code ###
 .vscode/
+/target/classes/likelion/senifood/common/CommonResponse.class
+/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/createdFiles.lst
+/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
+/target/surefire-reports/likelion.senifood.UserServiceTest.txt
+/target/classes/likelion/senifood/controller/LoginController.class
+/target/classes/likelion/senifood/dto/LoginRequest.class
+/target/classes/likelion/senifood/entity/Lunchbox.class
+/target/classes/likelion/senifood/controller/LunchboxController.class
+/target/classes/likelion/senifood/dto/LunchboxDTO.class
+/target/classes/likelion/senifood/repository/LunchboxRepository.class
+/target/classes/likelion/senifood/service/LunchboxService.class
+/target/surefire-reports/TEST-likelion.senifood.UserServiceTest.xml
+/target/classes/likelion/senifood/entity/User.class
+/target/classes/likelion/senifood/controller/UserController.class
+/target/classes/likelion/senifood/entity/UserDietLike.class
+/target/classes/likelion/senifood/entity/UserDietLikeId.class
+/target/classes/likelion/senifood/repository/UserDietLikeRepository.class
+/target/classes/likelion/senifood/service/UserDietLikeService.class
+/target/classes/likelion/senifood/dto/UserDTO.class
+/target/classes/likelion/senifood/dto/UserInfo.class
+/target/classes/likelion/senifood/repository/UserRepository.class
+/target/classes/likelion/senifood/service/UserService.class

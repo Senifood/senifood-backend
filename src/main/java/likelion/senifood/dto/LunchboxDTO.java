@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LunchboxDTO {
 
-    private Integer lunchbox_id;
+    private Long lunchbox_id;
     private String lunchbox_title;
     private String lunchbox_imageURL;
     private String lunchbox_price;
