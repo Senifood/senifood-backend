@@ -77,4 +77,10 @@ public class SurveyController {
 
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
+
+    @GetMapping("/responses/check/{user_id}")
+    public ResponseEntity<Boolean> checkUserResponse(@PathVariable("user_id") String userId) {
+        boolean hasResponded = userSurveyResponseService.hasUserResponded(userId);
+        return new ResponseEntity<>(hasResponded, HttpStatus.OK);
+    }
 }

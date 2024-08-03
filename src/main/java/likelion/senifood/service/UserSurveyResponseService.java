@@ -22,4 +22,8 @@ public class UserSurveyResponseService {
     public List<UserSurveyResponse> getUserResponses(String userId) {
         return userSurveyResponseRepository.findByUserId(userId);
     }
+
+    public boolean hasUserResponded(String userId) {
+        return userSurveyResponseRepository.existsByUserId(userId);
+    }
 }
