@@ -33,12 +33,16 @@ public class UserService {
     @Transactional
     public CommonResponse join(UserDTO userDTO) {
 
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
+            return new CommonResponse(false, HttpStatus.BAD_REQUEST, "패스워드가 일치하지 않습니다.", null);
+        }
+
         User entity = userDTO.toEntity();
         userRepository.save(entity);
 
         System.out.println(userDTO.toString());
 
-        return new CommonResponse(HttpStatus.OK, "User registered successfully.");
+        return new CommonResponse(true, HttpStatus.OK, "User registered successfully.", entity);
 
     }
 
