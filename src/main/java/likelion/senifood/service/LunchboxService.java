@@ -23,8 +23,7 @@ public class LunchboxService {
                         lunchbox.getLunchbox_id(),
                         lunchbox.getLunchbox_title(),
                         lunchbox.getLunchbox_imageURL(),
-                        lunchbox.getLunchbox_price(),
-                        lunchbox.isIs_subscribed()
+                        lunchbox.getLunchbox_price()
                 ))
                 .collect(Collectors.toList());
     }
