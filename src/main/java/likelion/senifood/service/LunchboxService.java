@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,4 +27,7 @@ public class LunchboxService {
                         lunchbox.isIs_subscribed()
                 ))
                 .collect(Collectors.toList());
-    }}
+    }
+
+    public Optional<Lunchbox> findById(Long lunchboxId) { return lunchboxRepository.findById(lunchboxId); }
+}
