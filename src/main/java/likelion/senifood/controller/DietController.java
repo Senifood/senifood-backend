@@ -74,10 +74,11 @@ public class DietController {
 
         query.append("Provide the details for only one food in the following format:\n\n");
         query.append("Diet Title: [Title]\n");
-        query.append("Benefits: [Benefits]\n");
-        query.append("Nutritional Content: [Nutritional Content]\n");
-        query.append("Recipe URL: [URL]\n");
+        query.append("Benefits: [Please provide detailed information about the health benefits, including specific advantages for different conditions, any supporting scientific evidence, and how it contributes to overall well-being.]\n");
+        query.append("Nutritional Content: [Provide a comprehensive breakdown of the nutritional content, including macronutrients (such as carbohydrates, proteins, fats), micronutrients (like vitamins and minerals), calorie count, and any other relevant nutritional information.]\n");
+        query.append("Recipe URL: [Please provide a recipe URL that is as close to a real, existing recipe as possible.]\n");
         query.append("Image URL: [URL]\n");
+        query.append("Please provide the response in Korean.\n");
 
         // ChatGPT API 호출
         Map<String, String> dietInfo = chatGptService.askChatGpt(query.toString());
