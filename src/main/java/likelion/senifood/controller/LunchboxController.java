@@ -2,6 +2,7 @@ package likelion.senifood.controller;
 
 import likelion.senifood.common.CommonResponse;
 import likelion.senifood.dto.LunchboxDTO;
+import likelion.senifood.dto.SubscriptionResponseDTO;
 import likelion.senifood.entity.Lunchbox;
 import likelion.senifood.entity.Subscription;
 import likelion.senifood.service.LunchboxService;
@@ -30,15 +31,16 @@ public class LunchboxController {
         return ResponseEntity.ok(lunchboxes);
     }
 
-    @PostMapping("subscribe/{userId}")
+    //구독
+    @PostMapping("subscribe/{userId}/{lunchboxId}")
     public ResponseEntity<String> subscribeToLunchbox
             (@PathVariable("userId") String userId,
-             @RequestBody Map<String, Long> requestBody) {
+             @PathVariable("lunchboxId") Long lunchboxId) {
 
-        Long lunchboxId = requestBody.get("lunchbox_id");
-        if(lunchboxId == null) {
-            return new ResponseEntity<>("lunchbox_id is required", HttpStatus.BAD_REQUEST);
-        }
+//        Long lunchboxId = requestBody.get("lunchbox_id");
+//        if(lunchboxId == null) {
+//            return new ResponseEntity<>("lunchbox_id is required", HttpStatus.BAD_REQUEST);
+//        }
 
         String startingDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
@@ -51,4 +53,21 @@ public class LunchboxController {
 
         return new ResponseEntity<>("Successful subscription", HttpStatus.OK);
     }
+
+    //구독 목록 확인
+    @GetMapping("subscribe/{userId}")
+    public ResponseEntity<List<SubscriptionResponseDTO>> getSubscriptions(@PathVariable("userId") String userId) {
+        List<SubscriptionResponseDTO> subscriptions = subscriptionService.getSubscriptionList(userId);
+        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
+    }
+
+    //구독 취소
+    @DeleteMapping("subscribe/{userId}/{lunchboxId}")
+    public ResponseEntity<String> cancelSubscription
+    (@PathVariable("userId") String userId,
+     @PathVariable("lunchboxId") Long lunchboxId) {
+        subscriptionService.deleteSubscription(userId, lunchboxId);
+        return new ResponseEntity<>("Subscription deleted successfully", HttpStatus.OK);
+    }
+
 }
