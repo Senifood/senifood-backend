@@ -24,7 +24,7 @@ public class UserDTO {
     private String phone;
     private int age;
     private String password;
-    private String confirmPassword;
+    private String confirm_password;
     private byte gender;
 
     public User toEntity() {
@@ -33,7 +33,6 @@ public class UserDTO {
         user.setName(this.name);
         user.setPhone(this.phone);
         user.setAge(this.age);
-        user.setPassword(this.password);
         user.setPassword(this.password);
         user.setGender(this.gender);
         return user;

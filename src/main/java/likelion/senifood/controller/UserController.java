@@ -41,6 +41,14 @@ public class UserController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<CommonResponse> deleteUser(@PathVariable("userId") String userId) {
+
+        CommonResponse response = userService.deleteUserById(userId);
+
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<CommonResponse> findUserById(@PathVariable("userId") String userId) {
 
