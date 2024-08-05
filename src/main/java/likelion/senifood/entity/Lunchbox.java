@@ -27,4 +27,8 @@ public class Lunchbox {
     public boolean isIs_subscribed() {
         return is_subscribed;
     }
+
+    public void setIs_subscribed(boolean is_subscribed) {
+        this.is_subscribed = is_subscribed;
+    }
 }

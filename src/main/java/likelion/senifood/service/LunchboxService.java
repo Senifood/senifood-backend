@@ -29,4 +29,15 @@ public class LunchboxService {
     }
 
     public Optional<Lunchbox> findById(Long lunchboxId) { return lunchboxRepository.findById(lunchboxId); }
+
+    public Lunchbox getLunchboxDetails(Long lunchboxId) {
+        return lunchboxRepository.findById(lunchboxId)
+                .orElseThrow(() -> new RuntimeException("도시락을 찾을 수 없습니다."));
+    }
+
+    public void updateSubscriptionStatus(Long lunchboxId, boolean isSubscribed) {
+        Lunchbox lunchbox = getLunchboxDetails(lunchboxId);
+        lunchbox.setIs_subscribed(isSubscribed);
+        lunchboxRepository.save(lunchbox);
+    }
 }
