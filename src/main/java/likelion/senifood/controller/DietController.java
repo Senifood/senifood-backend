@@ -78,6 +78,8 @@ public class DietController {
         query.append("Nutritional Content: [Provide a comprehensive breakdown of the nutritional content, including macronutrients (such as carbohydrates, proteins, fats), micronutrients (like vitamins and minerals), calorie count, and any other relevant nutritional information.]\n");
         query.append("Recipe URL: [Please provide a recipe URL that is as close to a real, existing recipe as possible.]\n");
         query.append("Image URL: [URL]\n");
+        query.append("For the Benefits and Nutritional Content fields, please provide the information in a single, continuous paragraph without line breaks or bullet points.\n");
+        query.append("For the Recipe URL, provide only one URL that is relevant and valid.\n");
         query.append("Please provide the response in Korean.\n");
 
         // ChatGPT API 호출
