@@ -53,14 +53,26 @@ public class LunchboxController {
                     if (lunchbox == null) {
                         return null;
                     }
-                    return new Lunchbox (
-                            lunchbox.getLunchbox_id(),
-                            lunchbox.getLunchbox_title(),
-                            lunchbox.getLunchbox_imageURL(),
-                            lunchbox.getLunchbox_price(),
-                            true,
-                            lunchbox.getLunchbox_foods()
-                    );
+                    if(subscription.getLunchboxId().equals(lunchbox.getLunchbox_id())) {
+                        return new Lunchbox (
+                                lunchbox.getLunchbox_id(),
+                                lunchbox.getLunchbox_title(),
+                                lunchbox.getLunchbox_imageURL(),
+                                lunchbox.getLunchbox_price(),
+                                true,
+                                lunchbox.getLunchbox_foods()
+                        );
+                    }else {
+                        return new Lunchbox (
+                                lunchbox.getLunchbox_id(),
+                                lunchbox.getLunchbox_title(),
+                                lunchbox.getLunchbox_imageURL(),
+                                lunchbox.getLunchbox_price(),
+                                false,
+                                lunchbox.getLunchbox_foods()
+                        );
+                    }
+
                 })
                 .filter(dto -> dto != null)
                 .collect(Collectors.toList());
