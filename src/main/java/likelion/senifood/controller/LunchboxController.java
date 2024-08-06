@@ -78,29 +78,6 @@ public class LunchboxController {
                 .collect(Collectors.toList());
     }
 
-    public List<SubscriptionResponseDTO> getSubscriptionList(String userId) {
-        List<Subscription> subscriptionList = subscriptionRepository.findByUserId(userId);
-        return subscriptionList.stream()
-                .map(subscription -> {
-                    Lunchbox lunchbox = lunchboxRepository.findById(subscription.getLunchboxId()).orElse(null);
-                    if (lunchbox == null) {
-                        return null;
-                    }
-                    LocalDate startingDate = LocalDate.parse(subscription.getStartingDate(), DateTimeFormatter.BASIC_ISO_DATE);
-                    LocalDate expirationDate = startingDate.plusMonths(1); // assuming a one-month subscription for the example
-                    return new SubscriptionResponseDTO(
-                            subscription.getStartingDate(),
-                            lunchbox.getLunchbox_id(),
-                            lunchbox.getLunchbox_title(),
-                            lunchbox.getLunchbox_imageURL(),
-                            lunchbox.getLunchbox_price(),
-                            expirationDate.format(DateTimeFormatter.BASIC_ISO_DATE)
-                    );
-                })
-                .filter(dto -> dto != null)
-                .collect(Collectors.toList());
-    }
-
     //구독
     @PostMapping("subscribe/{userId}/{lunchboxId}")
     public ResponseEntity<String> subscribeToLunchbox
