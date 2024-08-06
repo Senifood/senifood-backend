@@ -41,7 +41,7 @@ public class SubscriptionService {
         }
 
         subscriptionRepository.deleteById(id);
-        lunchboxService.updateSubscriptionStatus(lunchboxId, false);
+//        lunchboxService.updateSubscriptionStatus(lunchboxId, false);
     }
 
     public List<SubscriptionResponseDTO> getSubscriptionList(String userId) {

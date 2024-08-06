@@ -6,6 +6,7 @@ import likelion.senifood.dto.SubscriptionResponseDTO;
 import likelion.senifood.entity.Lunchbox;
 import likelion.senifood.entity.Subscription;
 import likelion.senifood.repository.LunchboxRepository;
+import likelion.senifood.repository.SubscriptionRepository;
 import likelion.senifood.service.LunchboxService;
 import likelion.senifood.service.SubscriptionService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/lunchbox")
@@ -27,6 +29,7 @@ public class LunchboxController {
     private final LunchboxService lunchboxService;
     private final SubscriptionService subscriptionService;
     private final LunchboxRepository lunchboxRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     @GetMapping
     public ResponseEntity<List<LunchboxDTO>> getAllLunchboxes() {
@@ -36,10 +39,54 @@ public class LunchboxController {
 
     //조회
     @GetMapping("/{lunchboxId}")
-    public ResponseEntity<Lunchbox> getLunchboxInfo (@PathVariable("lunchboxId") Long lunchboxId) {
+    public List<Lunchbox> getLunchboxInfo (
+            @PathVariable("lunchboxId") Long lunchboxId,
+            @RequestBody Map<String, String> requestBody) {
 
-        Lunchbox lunchbox = (Lunchbox) lunchboxService.getLunchboxDetails(lunchboxId);
-        return ResponseEntity.ok(lunchbox);
+        String userId = requestBody.get("user_id");
+
+        List<Subscription> subscriptionList = subscriptionRepository.findByUserId(userId);
+
+        return subscriptionList.stream()
+                .map(subscription -> {
+                    Lunchbox lunchbox = lunchboxRepository.findById(lunchboxId).orElse(null);
+                    if (lunchbox == null) {
+                        return null;
+                    }
+                    return new Lunchbox (
+                            lunchbox.getLunchbox_id(),
+                            lunchbox.getLunchbox_title(),
+                            lunchbox.getLunchbox_imageURL(),
+                            lunchbox.getLunchbox_price(),
+                            true,
+                            lunchbox.getLunchbox_foods()
+                    );
+                })
+                .filter(dto -> dto != null)
+                .collect(Collectors.toList());
+    }
+
+    public List<SubscriptionResponseDTO> getSubscriptionList(String userId) {
+        List<Subscription> subscriptionList = subscriptionRepository.findByUserId(userId);
+        return subscriptionList.stream()
+                .map(subscription -> {
+                    Lunchbox lunchbox = lunchboxRepository.findById(subscription.getLunchboxId()).orElse(null);
+                    if (lunchbox == null) {
+                        return null;
+                    }
+                    LocalDate startingDate = LocalDate.parse(subscription.getStartingDate(), DateTimeFormatter.BASIC_ISO_DATE);
+                    LocalDate expirationDate = startingDate.plusMonths(1); // assuming a one-month subscription for the example
+                    return new SubscriptionResponseDTO(
+                            subscription.getStartingDate(),
+                            lunchbox.getLunchbox_id(),
+                            lunchbox.getLunchbox_title(),
+                            lunchbox.getLunchbox_imageURL(),
+                            lunchbox.getLunchbox_price(),
+                            expirationDate.format(DateTimeFormatter.BASIC_ISO_DATE)
+                    );
+                })
+                .filter(dto -> dto != null)
+                .collect(Collectors.toList());
     }
 
     //구독
@@ -57,7 +104,7 @@ public class LunchboxController {
         subscription.setStartingDate(startingDate);
 
         subscriptionService.saveSubscription(subscription);
-        lunchboxService.updateSubscriptionStatus(lunchboxId, true);
+//        lunchboxService.updateSubscriptionStatus(lunchboxId, true);
 
         return new ResponseEntity<>("Successful subscription", HttpStatus.OK);
     }
