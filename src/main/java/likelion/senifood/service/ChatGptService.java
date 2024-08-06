@@ -27,7 +27,7 @@ public class ChatGptService {
         headers.set("Content-Type", "application/json");
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", "gpt-4");
+        requestBody.put("model", "gpt-4o");
 
         Map<String, Object> message = new HashMap<>();
         message.put("role", "user");
