@@ -1,6 +1,5 @@
 package likelion.senifood.controller;
 
-import likelion.senifood.common.CommonResponse;
 import likelion.senifood.dto.LunchboxDTO;
 import likelion.senifood.dto.SubscriptionResponseDTO;
 import likelion.senifood.entity.Lunchbox;
@@ -18,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,12 +36,10 @@ public class LunchboxController {
     }
 
     //조회
-    @GetMapping("/{lunchboxId}")
+    @GetMapping("/{userId}/{lunchboxId}")
     public List<Lunchbox> getLunchboxInfo (
-            @PathVariable("lunchboxId") Long lunchboxId,
-            @RequestBody Map<String, String> requestBody) {
-
-        String userId = requestBody.get("user_id");
+            @PathVariable("userId") String userId,
+            @PathVariable("lunchboxId") Long lunchboxId) {
 
         List<Subscription> subscriptionList = subscriptionRepository.findByUserId(userId);
 
